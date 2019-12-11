@@ -194,6 +194,11 @@ func (d *DB) QueryRowContext(ctx context.Context, query string, args ...interfac
 	return stmt.QueryRowContext(ctx, args)
 }
 
+func (d *DB) GetStatementsList() map[string]*sql.Stmt {
+
+	return d.stmts
+}
+
 type alias struct {
 	Name         string
 	Driver       DriverType
@@ -394,4 +399,13 @@ func GetDB(aliasNames ...string) (*sql.DB, error) {
 		return al.DB.DB, nil
 	}
 	return nil, fmt.Errorf("DataBase of alias name `%s` not found", name)
+}
+
+func GetDBAlias(aliasName string) (*alias, error) {
+	al, ok := dataBaseCache.get(aliasName)
+	if ok {
+		return al, nil
+	}
+
+	return nil, fmt.Errorf("DataBase of alias name `%s` not found", aliasName)
 }
